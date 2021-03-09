@@ -5,10 +5,37 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
+	<div class="container">
+		<h1>Data Science courses with test data</h1>
+		<div class="sankey-container">
+			<div id="sankey-tooltip">
+				<div class="tooltip-container">
+					<h3></h3>
+					<div class="tooltip-section skills-learned-wrapper">
+						<div class="label">Skills learned</div>
+						<ul class="skills-learned"></ul>
+					</div>
+					<div class="tooltip-section prerequesites-wrapper">
+						<div class="label">Prerequesites</div>
+						<ul class="prerequesites"></ul>
+					</div>
+					<div class="tooltip-section level-wrapper">
+						<span class="label">Level: </span><span class="level"></span>
+					</div>
+				</div>
+			</div>
+			<div id="sankey"></div>
+		</div>
+	</div>
 	
 
 	<!-- Scripts -->
 	<script src="https://d3js.org/d3.v6.min.js"></script>
+	<script src="js/d3-sankey.js"></script>
+
+	<script src="js/variables.js"></script>
+	<script src="js/helper-functions.js"></script>
+	<script src="js/dataprep.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

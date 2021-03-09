@@ -1,0 +1,56 @@
+.sankey-container {
+  position: relative;
+}
+#sankey-tooltip {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  .tooltip-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 400px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0px 1px 5px rgba(36, 36, 36, 0.5);
+    border-radius: 6px;
+    font-size: 1.4rem;
+  }
+  h3 {
+    padding-bottom: 5px;
+    color: $blueDark;
+    border-bottom: 2px solid $blueDark;
+  }
+  .tooltip-section {
+    margin: 15px 0 15px 10px;
+  }
+  .label {
+    color: $blueDark;
+    font-weight: 700;
+  }
+  ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+    li {
+      position: relative;
+      margin: 5px 0;
+      padding-left: 17px;
+      line-height: 1.1;
+      &:before {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 5px;
+        width: 5px;
+        height: 5px;
+        background: $blueDark;
+        border-radius: 50%;
+      }
+    }
+  }
+  .level {
+    margin-left: 2px;
+    text-transform: capitalize;
+  }
+}

@@ -1,0 +1,73 @@
+.node,
+.link {
+  position: relative;
+  transition: all ease-in 0.05s;
+  &.faded,
+  &.faded-hold {
+    transition-timing-function: ease-out;
+  }
+  &.active,
+  &.active-hold {
+    transition-timing-function: ease-out;
+  }
+}
+.link {
+  z-index: 1;
+  stroke-opacity: 0.6;
+  mix-blend-mode: multiply;
+  &.faded,
+  &.faded-hold {
+    stroke-opacity: 0.15;
+  }
+  &.active,
+  &.active-hold {
+    stroke-opacity: 1;
+  }
+}
+.node {
+  z-index: 2;
+  fill: $blueDark;
+  cursor: pointer;
+  &.faded,
+  &.faded-hold {
+    cursor: default;
+    opacity: 0.2;
+  }
+  &.active,
+  &.active-hold {
+    cursor: pointer;
+    opacity: 1 !important;
+  }
+  &.node-BEGINNER circle {
+    fill: $beginner;
+  }
+  &.node-INTERMEDIATE circle {
+    fill: $intermediate;
+  }
+  &.node-ADVANCED circle {
+    fill: $advanced;
+  }
+}
+
+.node-label {
+  font-size: 1.4rem;
+  fill: $blueDark;
+  &.node-label-title {
+    font-size: 1.2rem;
+  }
+  &.faded,
+  &.faded-hold {
+    cursor: default;
+    opacity: 0.2;
+  }
+  &.active,
+  &.active-hold {
+    cursor: pointer;
+    opacity: 1 !important;
+  }
+}
+
+.column-label {
+  font-weight: 700;
+  fill: $blueDark;
+}

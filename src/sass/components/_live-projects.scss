@@ -1,0 +1,148 @@
+.sankey-container {
+  position: relative;
+}
+.live-projects {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 300px;
+  .live-project {
+    position: absolute;
+    background-color: #fff;
+    // livreProject toggle
+    .live-project-toggle-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-top: 6px;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity ease-in 0.05s;
+      h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 400;
+        line-height: 1.1;
+        color: $blueDark;
+      }
+      .toggle {
+        position: relative;
+        flex-shrink: 0;
+        margin-left: 10px;
+        width: 18px;
+        height: 18px;
+        border: 1px solid $blueDark;
+        border-radius: 3px;
+          border: 1px solid $blueDark;
+        transition: all ease-in 0.05s;
+        &:before,
+        &:after {
+          display: block;
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: $blueDark;
+          transition: all ease-out 0.2s;
+        }
+        &:before {
+          width: 8px;
+          height: 1px;
+        }
+        &:after {
+          width: 1px;
+          height: 8px;
+        }
+      }
+      &:hover, &:focus,
+      &.open {
+        .toggle {
+          background-color: $blueDark;
+          color: #fff;
+          transition-timing-function: ease-out;
+          &:before,
+          &:after {
+            background-color: white;
+          }
+        }
+      }
+      &.open {
+        .toggle::after {
+          height: 0;
+        }
+      }
+      &.faded {
+        cursor: default;
+        opacity: 0.2;
+        transition-timing-function: ease-out;
+        .toggle {
+          background-color: transparent;
+          &:before,
+          &:after {
+            background-color: $blueDark;
+          }
+        }
+      }
+    }
+  }
+}
+
+.live-projects-content {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  .live-project-content {
+    position: absolute;
+    z-index: -1;
+    padding: 20px 15px;
+    font-size: 1.3rem;
+    color: $blueDark;
+    background-color: white;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    opacity: 0;
+    .label {
+      padding-left: 2px;
+      border-bottom: 1px solid $blueDark;
+    }
+    ul {
+      margin: 8px 0 15px;
+      padding-left: 25px;
+      li {
+        margin: 3px 0;
+      }
+    }
+    .level {
+      margin-top: 8px;
+      padding-left: 5px;
+      text-transform: capitalize;
+    }
+    .read-more {
+      display: inline-block;
+      margin-top: 20px;
+      margin-left: 5px;
+      padding: 10px 15px;
+      font-weight: 700;
+      color: white;
+      background-color: $blue;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: background-color ease-in 100ms;
+      &:hover, &:focus {
+        background-color: $blueDark;
+        transition-timing-function: ease-out;
+      }
+    }
+    &.open {
+      z-index: 10;
+      top: 40px;
+      left: -300px;
+      border-top: 3px solid $blueDark;
+      box-shadow: 0px 3px 5px #00000029;
+      opacity: 1;
+      transition: opacity ease-in 0.05s;
+    }
+  }
+}

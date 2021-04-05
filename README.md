@@ -1,5 +1,3 @@
-# Animation demo v1
-
 ## To run:
 1. Run `npm install` to install required files and dependencies.
 2. When it's done installing, run one of the task runners to get going:

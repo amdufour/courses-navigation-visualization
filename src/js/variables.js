@@ -1,8 +1,8 @@
 const liveProjectsUri = 'https://www-qa.manning.com/liveproject/';
 const width = 1160;
-const height = 700;
+const height = 900;
 const svgPadding = { top: 35, right: 300, bottom: 0, left: 20};
-const coursesCircleRadius = 10;
+const coursesCircleRadius = 11;
 const nodesWidth = 20;
 const nodesPadding = 20;
 

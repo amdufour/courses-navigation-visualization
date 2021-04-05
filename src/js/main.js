@@ -19,8 +19,25 @@ const createSankey = () => {
     nodes: graphData.nodes.map(d => Object.assign({}, d)),
     links: graphData.links.map(d => Object.assign({}, d))
   });
+  // Extract liveProjects from nodes and add id for easier retrieval
+  const liveProjects = [];
+  nodes.forEach(node => {
+    nodeByKey.forEach((key, value) => {
+      if (key.name === node.name) {
+        const value1 = value.slice(value.indexOf('[') + 2);
+        const value2 = value1.slice(0, value.indexOf(',') - 3);
+        if (value2 === 'title') {
+          const nodeInfo = node;
+          nodeInfo.id = data.find(datum => datum.title[0] === node.name).id;
+          liveProjects.push(nodeInfo);
+        }
+      }
+    });
+  });
+  
   console.log('nodes', nodes);
   console.log('links', links);
+  console.log('liveProjects', liveProjects);
 
 
   // Append links
@@ -76,41 +93,19 @@ const createSankey = () => {
       .attr('y', d => d.y0)
       .attr('width', d => d.x1 - d.x0)
       .attr('height', d => d.y1 - d.y0);
-  // If node is a course title, append link to course and circle
-  const nodesCoursesLink = nodeShapes.data(nodes.filter(d => { 
-      let column = '';
-      nodeByKey.forEach((key, value) => {
-        if (key.name === d.name) {
-          const value1 = value.slice(value.indexOf('[') + 2);
-          column = value1.slice(0, value.indexOf(',') - 3);
-        }
-      });
-      return column === 'title';
-    }))
-    .join('a')
+  // If node is a course title, append course placeholder.
+  // This placeholder will be overlapped by HTML elements to allow creating accordions.
+  const nodesCoursesLink = nodeShapes
+    .data(liveProjects)
+    .join('g')
       .attr('class', d => `node node-title node-${data.find(datum => datum.title[0] === d.name).difficulty} node-${d.index}`)
-      .attr('href', d => `${liveProjectsUri}${data.find(datum => datum.title[0] === d.name).slug}`)
-  nodesCoursesLink.append('circle')
+    .append('circle')
       .attr('cx', d => {
         getNodesHorizontalPosition(d.x0);
         return d.x0;
       })
       .attr('cy', d => d.y0 + (d.y1 - d.y0)/2)
       .attr('r', coursesCircleRadius);
-  nodesCoursesLink.append('text')
-    .attr('class', d => `node-label node-label-${d.index} node-label-${keys[nodesXPositions.indexOf(d.x0 + nodesPadding / 2)].id}`)
-      .attr('x', d => {
-        if (keys[nodesXPositions.indexOf(d.x0 + nodesPadding / 2)].id === 'title') {
-          return d.x1 - 2;
-        } else {
-          return d.x1 + 6;
-        }
-      })
-      .attr('y', d => (d.y1 + d.y0) / 2)
-      .attr('dy', '0.35em')
-      .attr('text-anchor', d => 'start')
-      .text(d => d.name)
-      .call(wrapText, 300);
 
       
   // Append nodes labels
@@ -183,24 +178,90 @@ const createSankey = () => {
       .attr('text-anchor', 'middle')
       .attr('y', 20)
       .text(d => d.label);
+
+
+  // Append liveProjects details section
+  // This section is appended in HTML to allow the accordion content to flow
+  const liveProjectsContainer = d3.select('.live-projects')
+    .selectAll('.live-project')
+    .data(liveProjects)
+    .join('div')
+      .attr('class', d => `live-project live-project-${d.index}`)
+      .style('width', `${svgPadding.right}px`)
+      .style('max-width', `${svgPadding.right}px`)
+      .style('transform', d => `translateY(${d.y1 + 11}px)`);
+  // Append liveProject title and toggle
+  const liveProjectsToggle = liveProjectsContainer
+    .append('div')
+      .attr('class', d => `live-project-toggle-wrapper live-project-toggle-wrapper-${d.index}`);
+  liveProjectsToggle
+    .append('h3')
+      .attr('id', d => `live-project-title-${d.index}`)
+      .text(d => d.name);
+  liveProjectsToggle
+    .append('div')
+      .attr('class', 'toggle');
+
+  // Append accordion content
+  const liveProjectsContent = d3.select('.live-projects-content')
+    .selectAll('.live-project-content')
+    .data(liveProjects)
+    .join('div')
+      .attr('class', d => `live-project-content live-project-content-${d.index}`)
+      .style('width', `${svgPadding.right}px`)
+      .style('max-width', `${svgPadding.right}px`)
+      .style('transform', d => `translateY(${d.y1 + 11}px)`);
+  // Skills learned
+  const skillsLearned = liveProjectsContent.append('div').attr('class', 'info-section skills-learned-wrapper');
+  skillsLearned.append('div').attr('class', 'label').text('Skills learned');
+  skillsLearned.append('ul').attr('class', 'skills-learned');
+  // Prerequesites
+  const prerequesites = liveProjectsContent.append('div').attr('class', 'info-section prerequesites-wrapper');
+  prerequesites.append('div').attr('class', 'label').text('Prerequesites');
+  prerequesites.append('ul').attr('class', 'prerequesites');
+  // Level
+  const level = liveProjectsContent.append('div').attr('class', 'info-section level-wrapper');
+  level.append('div').attr('class', 'label').text('Level');
+  // Populate accordion content
+  data.forEach(datum => {
+    const index = liveProjects.find(project => project.id === datum.id).index;
+    const projectContent = d3.select(`.live-project-content-${index}`);
+    datum.skills_learned.split(', ').forEach(sl => {
+      projectContent.select('.skills-learned').append('li').text(sl);
+    });
+    datum.skills_needed.split(', ').forEach(sl => {
+      projectContent.select('.prerequesites').append('li').text(sl);
+    });
+    projectContent.select('.level-wrapper').append('div').attr('class', 'level').text(datum.difficulty.toLowerCase());
+  });
+  // Read more link
+  liveProjectsContent.append('a').attr('href', d => `${liveProjectsUri}${data.find(datum => datum.title[0] === d.name).slug}`).attr('class', 'read-more').text('Buy this liveProject');
   
 
   // Rollover effects
   function handleMouseOver(d) {
-    const nodeClasses = d3.select(this).attr('class');
+    let nodeClasses = d3.select(this).attr('class');
+    if (nodeClasses.includes('faded')) nodeClasses = nodeClasses.replace(' faded', '');
+    if (nodeClasses.includes('faded-hold')) nodeClasses = nodeClasses.replace(' faded-hold', '');
+    if (nodeClasses.includes('active')) nodeClasses = nodeClasses.replace(' active', '');
+    if (nodeClasses.includes('active-hold')) nodeClasses = nodeClasses.replace(' active-hold', '');
+    if (nodeClasses.includes('-hold')) nodeClasses = nodeClasses.replace('-hold', '');
     const node = nodes.find(node => node.index === parseInt(nodeClasses.slice(nodeClasses.lastIndexOf('-') + 1), 10));
     if (node) {
       if (!isActiveElement) handleHighlight(node, nodes, 'active', true);
-      if (nodeClasses.includes('node-title')) showTooltip(d, node);
     }
   }
 
   function handleMouseOut(d) {
-    const nodeClasses = d3.select(this).attr('class');
+    let nodeClasses = d3.select(this).attr('class');
+    if (nodeClasses.includes('faded')) nodeClasses = nodeClasses.replace(' faded', '');
+    if (nodeClasses.includes('faded-hold')) nodeClasses = nodeClasses.replace(' faded-hold', '');
+    if (nodeClasses.includes('active')) nodeClasses = nodeClasses.replace(' active', '');
+    if (nodeClasses.includes('active-hold')) nodeClasses = nodeClasses.replace(' active-hold', '');
+    if (nodeClasses.includes('-hold')) nodeClasses = nodeClasses.replace('-hold', '');
     const node = nodes.find(node => node.index === parseInt(nodeClasses.slice(nodeClasses.lastIndexOf('-') + 1), 10));
     if (node) {
       if (!isActiveElement) handleHighlight(node, nodes, 'active', false);
-      if (nodeClasses.includes('node-title')) hideTooltip();
     }
   }
 
@@ -212,43 +273,14 @@ const createSankey = () => {
     if (node) handleHighlight(node, nodes, 'active-hold', true);
   }
 
-  function showTooltip(d, node) {
-    // Populate tooltip with data
-    const courseData = data.find(datum => datum.title[0] === node.name);
-    d3.select('#sankey-tooltip h3').text(courseData.title[0]);
-    const skillsLearnedList = d3.select('#sankey-tooltip .skills-learned');
-    const prerequesitesList = d3.select('#sankey-tooltip .prerequesites');
-    skillsLearnedList.selectAll('li').remove();
-    prerequesitesList.selectAll('li').remove();
-    courseData.skills_learned.split(', ').forEach(sl => {
-      skillsLearnedList.append('li').text(sl);
-    });
-    courseData.skills_needed.split(', ').forEach(sn => {
-      prerequesitesList.append('li').text(sn);
-    });
-    d3.select('#sankey-tooltip .level').text(courseData.difficulty.toLowerCase());
-
-    // Make the tooltip appear at the right location
-    const xpos = node.x0;
-    const ypos = node.y1 + d3.select('#sankey-tooltip .tooltip-container').node().getBoundingClientRect().height + 50;
-
-    d3.select('#sankey-tooltip')
-      .style('transform', `translate(${xpos}px, ${ypos}px)`)
-      .style('z-index', 100)
-      .transition()
-      .duration(0)
-      .style('opacity', 1);
-  }
-
-  function hideTooltip() {
-    d3.select('#sankey-tooltip')
-      .style('transform', `translate(0px, 0px)`)
-      .style('z-index', -1)
-      .style('opacity', 0);
-  }
-
+  // Handle nodes mouse events
   d3.selectAll('.node')
     .on('mouseenter', handleMouseOver)
     .on('mouseleave', handleMouseOut)
     .on('click', handleNodeClick);
+
+  // Handle liveProjects mouse events
+  d3.selectAll('.live-project-toggle-wrapper')
+    .on('mouseenter', handleMouseOver)
+    .on('mouseleave', handleMouseOut);
 };

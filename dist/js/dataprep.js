@@ -1,9 +1,10 @@
 /*! project-name v0.0.1 | (c) 2021 YOUR NAME | MIT License | http://link-to-your-git-repo.com */
 // Load original data
-d3.csv('../data/data.csv').then(d => {
-  data = d;
-  prepData();
-});
+// d3.csv('../data/data.csv').then(d => {
+//   data = d;
+//   prepData();
+// });
+prepData();
 
 // Format data
 function prepData() {
@@ -11,15 +12,15 @@ function prepData() {
   const nodes = [];
   const links = [];
 
-  // Format arrays of concepts, topics and libraries
-  data.forEach(project => {
-    project.topics = project.topics.split(', ');
-    project.concepts = project.concepts.split(', ');
-    project.skills = project.skills.split(', ');
-    project.languages_and_libraries = project.languages_and_libraries.split(', ');
-    project.title = [project.title]; // Structuring the titles as an array will simplify the creation og the links
-    project.value = 1;
-  });
+  // // Format arrays of concepts, topics and libraries
+  // data.forEach(project => {
+  //   project.topics = project.topics.split(', ');
+  //   project.concepts = project.concepts.split(', ');
+  //   project.skills = project.skills.split(', ');
+  //   project.languages_and_libraries = project.languages_and_libraries.split(', ');
+  //   project.title = [project.title]; // Structuring the titles as an array will simplify the creation og the links
+  //   project.value = 1;
+  // });
   console.log(data);
 
   // Create nodes array

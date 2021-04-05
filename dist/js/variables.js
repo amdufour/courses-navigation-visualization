@@ -10,7 +10,7 @@ const nodesPadding = 20;
 let nodesXPositions = [];
 let isActiveElement = false;
 
-let data = [];
+// let data = [];
 let graphData;
 const nodeByKey = new Map();
 const indexByKey = new Map();
